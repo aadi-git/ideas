@@ -1,0 +1,51 @@
+Creating custom build environments using 'env-cmd' for React-JS app
+
+Previously we discussed about generating environment specific builds. But what if we want environment
+other than 'development', 'production', 'test', like 'staging'.
+
+Initial steps are similar to the previous forum.
+
+Steps to create custom build environment : 
+1. Create property files (just like we discussed in previous forum) in the project folder next to the 
+package.json file.
+
+eg. if we want to create staging environment, create file with name '.env.staging'
+
+2. Creating variables inside the property file is same as the previous forum. 
+REACT_APP_BASE_API_URL = http://localhost:8080/api/v1
+(Don't forget to start the variable name with "REACT_APP_")
+
+Accessing the variables is also the same
+eg. process.env.REACT_APP_BASE_API_URL
+
+3. Installing npm package 'env-cmd'
+Run command 
+    npm i --D env-cmd
+
+4. Setting up script in package.json.
+    We have to add scripts for building the project with environment specific variables
+For that open 'package.json' and you'll find "script" object that looks like below
+
+"scripts":{
+    "start" : "...",
+    "build" : "...",
+    "test" : "..."
+}
+
+Add script for inside "scripts" object as shown below
+"build:[environment]":"env-cmd -f [property_file] npm run build"
+    eg. For staging add script "build:staging" : "env-cmd -f .env.staging npm run build" 
+
+So the object looks like
+"scripts":{
+    "start" : "...",
+    "build" : "...",
+    "build:staging" : "env-cmd -f .env.staging npm run build",
+    "test" : "..."
+}
+
+We have successfully created custom environment using custom env files.
+
+To create the custom build
+Run command
+    npm run build:staging
