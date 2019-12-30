@@ -1,0 +1,61 @@
+Redux (Single state for whole application)
+1. Store - Storage
+    - What? - On low level a store is nothing but an object which can contain the state of the whole app.  
+
+    - Why? - Each component in your react app has it's own state which is only accessible to the component itself.
+        But what if we want use some state variables of one component inside another component? we can pass the state 
+    variables through props to the child component. 
+        Now consider the case where components are at same level, child of same parent or if the components 
+    are in completely different parts of the app. How would we access the state? 
+
+    - How? - Redux provides a store using createStore() api. Using store.getState() we can get the current state object. 
+    Using store.dispatch(), we can dispatch actions to mutate the state.
+
+2. Reducers - Changemaker
+    - What? - A reducer is a pure function which changes the state of the store, it changes the values of the state object.
+
+    - Why? - To mutate the state of the store.
+
+    - How? - In order to change the state of the app (AKA the store) reducer are written in the way that when an action is 
+    dispatched it'll go through the reducer and the mutate the state.
+
+3. Actions - Changes
+    - What? - Actions are Objects containing type and data, type describes what to change and data is the data we need to 
+    change.
+
+    - Why? - To inform the reducer which data we need to change 
+
+    - How? - {type:ACTION_TYPE,data:{abc:"abc}}
+    
+4. Dispatch - Way of making change
+    - What? - Dispatch is a function which takes action as a parameter and sends it to the reducer to dispatch the action
+    - Why? - 
+    - How? - store.dispatch(ACTION)
+
+Redux-React (Way of connecting redux to react )
+1. Provider
+    - What? - A Provider is used to connect the store to the react app.
+    - Why? - 
+    - How? -
+2. connect
+    - What?
+    - Why?
+    - How?
+3. mapStateToProps
+    - What?
+    - Why?
+    - How?
+4. mapDispatchToProps
+    - What?
+    - Why?
+    - How?
+5. bindActionCreators
+    - What?
+    - Why?
+    - How?
+6. combineReducers
+    - What?
+    - Why?
+    - How?
+
+Middleware

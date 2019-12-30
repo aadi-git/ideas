@@ -1,0 +1,137 @@
+Suppose we are making a react app which will have login screen containing username and password, one screen to view 
+and one screen to edit mobileNumber, email of the user.
+
+So our app component hierarchy is
+ App
+  |-Login
+  |-ViewInfo
+  |-EditInfo
+
+Consider two scenarios 
+    1. In react, each component has it's own state. And when it comes to sharing this state we can do that from parent to 
+child, that is we can share parent's state as props to the child. React dataflow is unidirectional, it means that we can only 
+send data from parent to child. But what if we want to send data from one component to another which are not related by 
+this hierarchy, (like sibling components, components with same parents, or even worse, components whose predecessor is the
+root component, App component in many cases).
+    In our case the user info of logged in user (mobileNumber and email) are the common states that we need to show on view 
+screen and edit screen. Observe that login, view and edit screens are the sibling components.
+    
+    2. Consider a case in which we want to share some data throughout the app, that means any component of the app has 
+access to it. We can do that by storing that data in the root component of the react app (App component) and the passing to
+the child component through props. As easy as it sounds this process gets hectic and is even more complex when we want to 
+change some values in that data. I mean think about it, react props are immutable so you'll have to write a function in the 
+root component to change the data and then you'll have to pass it to all the child components, and to the child of that child 
+components and so on. 
+    If we want to get the data of logged in user from server and then view/edit it, we'll have an access token that to make
+API calls. This access token should be available throughout the app to check if the user is logged in and make API calls. 
+This would be the common shared data.
+
+So how do we accomplish this?
+
+Using redux library we can accomplish all this.
+
+How?
+
+Let's see
+
+Redux provides something called store. As the name suggests, it is a store which can be used to store the state of the 
+application. 
+
+But what do you mean by the State of the Application?
+It is the common data which can be shared throughout the App. 
+
+Now this store thing is a big object containing your common data, which they call the 'state', a function to get that data 
+(getState), a function to change that state (dispatch), and a function which will run everytime the store has changed
+(subscribe).
+
+Okay, well how do I create the so called "store" ?
+For that redux provides a function createStore() whose parameters are reducer,initialState, and enhancer. For now we only 
+focus on the reducer and initialState
+
+const store = createStore(reducer,initialState);
+
+initialState, as the name suggests is the state that is loaded into store upon creation.
+
+Go on then, what is a reducer?
+A reducer is a pure javascript function that decides how the store will change. Which basically is a function that we define
+so that we can mutate the state as we need.
+example
+
+function reducer(state , action){
+    ...some changes in the state
+    return state
+}
+where state is the state of the store.
+reducer then returns the changed state to the store.
+
+Wait a second! What is an action now?
+Actions are the objects which have at least one element called type, which describes what kind of action it is. 
+In our example, when user logs in, we can save data of user by an action 
+
+{
+    type: SET_USER_INFO, //This constant can be of lower case but its redux standard to define them in Caps.
+    payload: {
+        username:"abc",
+        mobileNumber:"123456789",
+        email:"abc@xyz.com"
+    }
+}
+
+The type in an action object is a string constant that describes what that action is. This type property of the action object
+is used in reducer to execute that change in the state.
+
+We define the constants in one separate file for keeping the code clean and import those constants into the files where the 
+reducer is defined and and actions are written.
+
+The payload of an action is the data we need to change in the state of the store. You can define that property with any name.
+Just remember to use the same name inside reducer to access the data.
+
+So our reducer will be
+function userInfoReducer(state , action){
+    switch(action.type){
+        case SET_USER_INFO:
+        return {
+            ...state, 
+            username:action.payload.username,
+            mobileNumber:action.payload.mobileNumber,
+            email:action.payload.email            
+        }
+        default:
+        return state;
+    }
+}
+
+So now we create store using this reducer
+const store = createStore(userInfoReducer);
+
+Till now we have defined store, a reducer and an action. But the action is still not reached to the reducer. For action to
+dispatch and reach the reducer we call the function dispatch of the store object. 
+
+store.dispatch({
+    type: SET_USER_INFO, //This constant can be of lower case but its redux standard to define them in Caps.
+    payload: {
+        username:"abc",
+        mobileNumber:"123456789",
+        email:"abc@xyz.com"
+    }
+})
+
+So the task of dispatch object is to take the action object and send it to the store. The store then internally calls the 
+reducer function which we have defined with paramaters state which is the state of the store and action that we have sent 
+through dispatch.
+
+So you can see that userInfoReducer function is called inside the store, action.type is checked through switch function, 
+respective changes are made to the state and it is returned. 
+
+Remember!! Always use spread operator(...) to expand state to create new object and then make changes. The store needs to 
+know that the state is changed. 
+
+So this were the things we needed to create a store, add reducer to make changes, create an action of changed data and 
+dispatch the action.
+
+So how I get the state inside my React App
+For that we need to use getState function of the store.
+store.getState() will return the current state of the store. We can use the values inside our app to view on UI. 
+
+The last function, store.subscribe will take a function as an argument will run that function everytime state of the store 
+changes.

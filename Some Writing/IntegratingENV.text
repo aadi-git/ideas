@@ -1,0 +1,63 @@
+Using ENV variables to build CRA into different environments
+
+Prerequisite
+    1. Create-React-App project.
+    2. npm Package 'env-cmd'.
+
+
+Why?
+    1. Environment-specific variables.
+        example : different API urls for development, QA, staging, production
+    2. Automation while building project
+
+How?
+    1. Create Enviromnent files in the Project folder next to the package.json file.
+        Naming the files as per the environment 
+            .env - All the common/ shared variables.
+            .env.staging - variables required for staging build.
+            .env.qa - variables required for QA build.
+
+    2. Inside the environment files -
+        The variable names in the files should start with REACT_APP_ . 
+        (Any other variable names will be ignored)
+        Declare variables as 
+
+        //.env.local
+        REACT_APP_BASE_API_URL = http://local-url/api/v1
+
+        //.env.staging
+        REACT_APP_BASE_API_URL = http://staging-url/api/v1
+
+        Bonus Note : The string 'REACT_APP_' that we need to apply before the variable names is defined in the config/env.js.
+        We can change it to anything and the node will filter only those variables.
+
+    3. Install package env-cmd using following command
+        npm i env-cmd
+
+    4. Change package.json scripts for build commands.
+        example:
+            If the env files are .env, .env.local, .env.staging, .env.qa
+
+            In the package.json, add scripts
+            "scripts":{
+                "build": "node scripts/build.js",
+                "build:qa": "env-cmd -f .env.qa npm run build",
+                "build:staging": "env-cmd -f .env.staging npm run build",
+            }
+
+        Bonus Note : When you run 'npm run build' command, .env.local is chosen by default so we don't have to write it explicitly
+
+    5. To build the project in custom environment :
+
+        For local build run following command 
+        npm run build
+
+        For staging build run following command 
+        npm build:staging
+
+        For QA build run following command 
+        npm build:qa
+
+    6. To access the env variables into the project 
+        access it in the react app using 
+        const BASE_API_URL = process.env.REACT_APP_BASE_API_URL

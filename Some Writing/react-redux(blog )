@@ -1,0 +1,110 @@
+React-Redux 
+
+    So hey, we learned about the way of redux in the last post. The store, actions, reducer, getState, dispatch n all other 
+things. In this post we will learn a new library for connecting react and redux store in a new easier way.
+
+    The library is react-redux. It provides functionality of connecting react app to redux store using Provider component. 
+The required prop of this component is the store object we created using createStore And the children of this component is 
+the App component itself. 
+
+In short we're adding Provider as a parent of our app so it can manage the store throughout the app.
+
+So in our index.js the code will look like
+
+const store = createStore(reducer,initialState);
+
+...code
+
+<Provider store={store}>
+    <App/>
+</Provider>
+
+...code
+
+So how do we take data from the store and use it in the components?
+Well we can import the store we defined here, in our components and then use store.getState each time we need the state 
+values.
+
+And how do we dispatch actions to the store?
+Again, You can import the store everytime and then use store.dispatch.
+
+Sounds exhausting!! Right?
+
+Well we don't need to do that. We can use connect function from react-redux to connect the component individually.
+
+If we want to use the state inside ViewInfo component and dispatch some actions, We'll write 
+
+export default connect(mapStateToProps,mapDispatchToProps)(ViewInfo)
+
+The two brackets in front of the function is an example of currying concept of javascript. Actually connect function has only 
+two parameters mapStateToProps and mapDispatchToProps. But when this function executes, it returns another function which is
+executed using the another bracket with our component as a parameter. 
+
+So the first parameter of connect function mapStateToProps is also a function and it has a very intuitive name, it maps some 
+part of the state of the store to the props of the component.
+
+we define mapStateToProps as
+
+const mapStateToProps =(state)=>{
+    return {
+        username: state.username
+    }
+}
+
+It returns an object. Each property of this object is then merged into props of our Component. So we can access this properties
+through props of our component. We are assigning selective state properties of the store to our props of the component. Isn't it cool!!
+
+The second parameter of connect function is mapDispatchToProps. Which again is a function returning an object. But instead
+of returning state this object has action binders that we can access through props of our component.
+
+What is an action binder?
+In last post we have seen the concept of dispatching an action. An action is an object having atleast one property named type
+and a payload if applicable.
+
+We dispatch this action using store.dispatch({type:ACTION_TYPE,payload:{}})
+
+So everytime when we want to dispatch this action with different data, we'll have to write this code again and again. 
+Instead of that, we write a function which will dispatch this action. And it'll take data as parameter so that we'll just have
+to call the function with the data we need to change
+
+Like this
+
+const changeUserInfo = (userInfo)=>{
+    store.dispatch({
+        type: SET_USER_INFO,
+        payload:{
+            username:userInfo.username,
+            mobileNumber:userInfo.mobileNumber
+        }
+    })
+}
+We'll just call this function with new user info whenever we need to dispatch the action.
+
+Getting back to the point, mapDispatchToProps will return an object of such action binders but instead of dispatching an action
+by store.action connect function will internally provide a dispatch function to the mapDispatchToProps function.
+
+We define mapDispatchToProps as
+
+const mapDispatchToProps =(dispatch)=>{
+    return {
+        changeUserInfo:(userInfo)=>{
+            dispatch({
+                type: SET_USER_INFO,
+                payload:{
+                    username:userInfo.username,
+                    mobileNumber:userInfo.mobileNumber
+                }
+            })
+        }
+    }
+}
+
+    Inside the component, we can access this action using the name we have defined to the function inside that object, in our 
+case we access it as, this.props.changeUserInfo().
+
+    connect function is a higher order generator function. Complex words simplified, connect takes a Component as a parameter
+and returns same component with modified props. And the new modified props are, as you've guessed, the properties of objects 
+returned by mapStateToProps, and mapDispatchToProps functions.
+    So instead of using the original component that we've created we use this modified component and then access the redux
+store with it.
+    See!! we don't have to carry the store everywhere and our code is kept clean. 

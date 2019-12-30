@@ -1,0 +1,109 @@
+Progressive web app
+
+What is PWA?
+
+Benefites of PWA
+
+Steps :
+1. Service Workers
+2. Manifest file
+3. Index.js -> register service worker.
+4. Icons inside public folder.
+5. Lighthouse.
+6. Build under https server.
+7. Prompt for installation.
+
+Converting your CRA into PWA.
+
+What is a Progrssive web app?
+    A Progrssive web app (abbreviated as PWA) is a normal web-app / website which can work even when user is offline.
+In offline mode, our general web-app responds with User offline warning, Or a Dinosaur game on chrome. 
+
+what are the benefites of PWA?
+    Fast 
+        Normal web app fetches the html pages, JS scripts, CSS scripts for a page everytime that page loads. This affects the 
+    page loading and execution time. With PWA, all the static pages and assets (images) are stored in browser cache. Next 
+    time when the page loads, instead of making fetch request to server browser simply takes the static data from the cache
+    and only goes to server for API requests inside the page.
+
+    Native-app like Experience
+
+    Updates Automatically
+        PWA updates automatically without users interactions, there won't be a prompt for updating the app. It'll silently 
+    update the scripts when user closes all the tabs of the app.
+
+    Light-weight
+        PWAs are very light weighted as compared to the Native applications. Whole app may fit in the size less than 500 kb.
+    The Twitter Native app costs 23.5MB of the storage which increases as user interacts with it. Twitter PWA costs 600KB of the 
+    storage.
+
+How to convert your existing CRA to PWA
+    Step 1 : Lighthouse
+        Lighthouse is a great resource in our Chrome Dev-Tools. We’ll be using it to check the PWA-ness of our app at 
+    different points. It’s located in your Chrome Dev-Tools in the ‘Audit’ tab.
+        When we audit our app, we find different aspects of our app like Performance, SEO, Accessibility and, important for 
+    us, PWA. It shows how our app is not a PWA by pointing out the necessary things that we haven't done yet.
+        Some important points for our app to be a PWA are
+            1. Strictly served under HTTPS.
+            2. Proper Manifest file with icons declared for App-Icon on mobile devices and splash screen.
+            3. Enabled Service worker.
+
+    Step 2 : Service worker
+        The offline-ness of the PWA is accomplished using an automatically running script called Service Workers.
+    This script when enabled, works in background without users interaction to cache the static html, js files, assets like 
+    images, icons. Later when the page loads it takes static data from cache and only calls server for dynamic data.
+    
+    In the index file of out CRA, there's a line 
+        serviceWorker.unregister();
+    This is the service workder we're talking about. CRA provides a service worker by default so we don't have to write 
+    custom script for that.
+    In order to start the service worker, we change the above line in index.js to
+        serviceWorker.register();
+    
+    Step 3: Manifest file
+        CRA has a manifest file in public folder which defines how the app will appear on mobile devices using some properties.
+     If you open the manifest file you'll see a JSON object like
+
+    {
+        "short_name": "Sanerret",
+        "name": "Sanerret",
+        "icons": [
+            {
+                "src": "sanerret_ico.ico",
+                "sizes": "64x64 32x32 24x24 16x16",
+                "type": "image/x-icon"
+            }
+        ],
+        "start_url": ".",
+        "display": "standalone",
+        "theme_color": "#000000",
+        "background_color": "#ffffff"
+    }
+
+    short_name - Its a short name of PWA which will appear on the homescreen of your device.
+
+    name - Also a name for PWA which will appear on homesreen of device if short_name is not defined, It'll also appear on 
+    Splash Screen.
+
+    icons - An array of icon that we want give to the PWA on homescreen.include a 192x192 pixel icon and a 512x512 pixel icon. 
+        Chrome will automatically scale the icon for the device.
+
+    display - It decides how the app wil work on devices. 
+        - fullscreen : without any browser UI and takes up the entirety of the available display area.
+        - standalone : web app to look and feel like a standalone native app
+        - browser : A standard browser experience
+        In order to show the Add to Home Screen Prompt, display must be set to standalone.
+
+    theme_color - The theme_color sets the color of the tool bar, and may be reflected in the app's preview in task 
+    switchers.
+
+    background_color: Background color of the Splash screen.
+
+    Chrome will automatically create the splash screen from the manifest properties icon, name, background_color.
+
+    To manually verify your manifest is setup correctly, you can use the Manifest tab on the Application panel of 
+    Chrome DevTools.
+
+
+
+Reference : https://create-react-app.dev/docs/making-a-progressive-web-app
